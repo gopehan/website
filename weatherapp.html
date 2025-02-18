@@ -1,0 +1,121 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            margin: 0;
+            text-align: center;
+            color: white;
+        }
+        .container {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+        input {
+            width: 90%;
+            padding: 8px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: white;
+            background: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 15px;
+            font-size: 1.1rem;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background: #ff4757;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: #e84118;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Weather App</h2>
+        <input type="text" id="txtCity" placeholder="Enter City">
+        <input type="text" id="txtCountry" placeholder="Enter Country">
+        <button class="btn" id="btnGetWeather">Get Weather</button>
+        <div class="result" id="resultDiv"></div>
+        <a href="websitemainpage.html" class="back-btn">Back to Home</a>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#btnGetWeather').click(function () {
+                var resultElement = $('#resultDiv');
+                resultElement.html('');
+
+                var city = $('#txtCity').val().trim();
+                var country = $('#txtCountry').val().trim();
+                
+                if (!city || !country) {
+                    alert("Please enter both city and country.");
+                    return;
+                }
+
+                var requestData = city + ',' + country;
+                $.ajax({
+                    url: 'https://api.openweathermap.org/data/2.5/weather',
+                    method: 'GET',
+                    data: { q: requestData, appid: '7d66a1ff52c53792815c1a07fc85ae95', units: 'imperial' },
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.weather && response.main) {
+                            resultElement.html(
+                                '<strong>Location:</strong> ' + response.name + ', ' + response.sys.country + '<br/>' +
+                                '<strong>Weather:</strong> ' + response.weather[0].main + '<br/>' +
+                                '<strong>Description:</strong> ' + response.weather[0].description + '<br/>' +
+                                '<strong>Temperature:</strong> ' + response.main.temp + '°F (' + 
+                                ((response.main.temp - 32) * 5 / 9).toFixed(2) + '°C)<br/>' +
+                                '<strong>Feels Like:</strong> ' + response.main.feels_like + '°F<br/>' +
+                                '<strong>Humidity:</strong> ' + response.main.humidity + '%<br/>' +
+                                '<strong>Wind Speed:</strong> ' + response.wind.speed + ' m/s'
+                            );
+                        } else {
+                            resultElement.html("No weather data found.");
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert("Error: " + jqXHR.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
